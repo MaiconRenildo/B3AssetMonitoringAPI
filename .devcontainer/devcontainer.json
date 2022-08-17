@@ -1,0 +1,16 @@
+{
+  "name": "Existing Dockerfile",
+  "context": "..",
+  "dockerFile": "./Dockerfile",
+  "extensions": [
+    "ms-python.python",
+    "littlefoxteam.vscode-python-test-adapter",
+    "ms-vsliveshare.vsliveshare",
+    "bungcip.better-toml",
+    "mhutchie.git-graph",
+    "Tyriar.sort-lines",
+    "eamodio.gitlens"
+  ],
+  "postCreateCommand": "pip install -r requirements.txt && pip install redis",
+  "postStartCommand": "apt install redis-server -y && service redis-server start"
+}
