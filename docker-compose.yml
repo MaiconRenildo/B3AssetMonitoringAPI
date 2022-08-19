@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  mysql:
+    container_name: "mysql-inoa"
+    image: mysql:5.6
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: INOA
+
+  redis:
+    build:
+      context: .
+      dockerfile: ./docker/redis/Dockerfile
+    ports:
+      - 6379:6379
+
+  api:
+    container_name: "api-inoa"
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: 123456
+      DB_DATABASE: INOA
+      DB_PORT: 3306
+    ports:
+      - 8000:8000
