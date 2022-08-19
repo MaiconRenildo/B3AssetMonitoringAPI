@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "b3monitoringapi"
+version = "0.1.0"
+description = ""
+authors = ["Maicon Renildo <maicon.renildo1@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
