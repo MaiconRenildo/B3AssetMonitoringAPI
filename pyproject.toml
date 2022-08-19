@@ -9,6 +9,9 @@ python = "^3.10"
 peewee = "^3.15.1"
 python-dotenv = "^0.20.0"
 PyMySQL = "^1.0.2"
+pytz = "^2022.2.1"
+fastapi = "^0.79.0"
+PyJWT ="^2.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.1"
