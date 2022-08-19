@@ -33,6 +33,95 @@ def start_database():
 
 
 ##########################################################
+#################################################### CRON 
+def filter_price(array,code):
+    return filter(lambda x: (x['asset_code'] == code),array)
+
+@app.on_event("startup")
+def update_cotations_history():
+    from api.services.b3.util import get_asset_cotation,send_purchase_recommendation_email,send_sale_recommendation_email,is_market_closed
+    from api.services.b3.repository import get_monitored_assets,insert_in_asset_monitoring_history,update_asset_monitoring_orders
+    from api.modules.queue import monitoring_queue,email_queue
+    from api.modules.util import now
+    from datetime import timedelta
+
+    monitoring_queue().enqueue_in(timedelta(seconds=60),update_cotations_history)
+
+    if is_market_closed():
+        print("\nThe market is closed",now(),"\n")
+        return False
+
+    monitored_assets = get_monitored_assets()
+
+    if monitored_assets == False: 
+        print("\nThere are no cotations to check -> ",now(),"\n")
+        return False
+
+
+    array_with_codes_and_ids_and_prices = []
+    ids_and_order_types = []
+    array_with_codes = []
+
+    for i in monitored_assets:
+
+        new_code = i['asset_code']
+        new_element_with_price = {"code": i['asset_code'], "id": i['asset_id']}
+
+        price = 0
+
+        if new_code not in array_with_codes:
+            array_with_codes.append(new_code)
+            try:
+                price = get_asset_cotation(new_element_with_price['code'])
+                new_element_with_price['price'] = price
+                array_with_codes_and_ids_and_prices.append(new_element_with_price)
+            except:
+                array_with_codes.remove(new_code)
+        else:
+            new_element_with_price['price'] = filter_price(array_with_codes_and_ids_and_prices,i['asset_code'])
+
+
+        # ordem de compra
+        if i['lower_price_limit'] <= price and i['upper_price_limit'] > price:
+            
+            if i['buy_order'] == None:
+                email_queue().enqueue(
+                    send_purchase_recommendation_email,
+                    email=i['user_email'],
+                    asset_code=i['asset_code'],
+                    price=new_element_with_price['price']
+                )
+
+                ids_and_order_types.append({"id":i['monitoring_id'],"order_type": "buy"})
+
+
+        # ordem de venda
+        if i['upper_price_limit'] <= price:
+
+            if i['sell_order'] == None:
+
+                email_queue().enqueue(
+                    send_sale_recommendation_email,
+                    email=i['user_email'],
+                    asset_code=i['asset_code'],
+                    price=new_element_with_price['price']
+                )
+
+                ids_and_order_types.append({"id":i['monitoring_id'],"order_type": "sell"})
+    
+    update_asset_monitoring_orders(ids_and_order_types)
+
+    if(insert_in_asset_monitoring_history(array_with_codes_and_ids_and_prices,now())):
+        print("Cotations updated successfully")
+        return True
+    
+    print("Cotations not updated")
+    return False
+
+
+
+
+##########################################################
 ##################################### COTAÇÃO DE UM ATIVO 
 class CotationIn(BaseModel):
     asset_code: str = Field(...,example="CSAN3")
