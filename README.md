@@ -7,6 +7,20 @@ API de monitoramento de ativos da B3
 - [Docker](https://www.docker.com/products/docker-desktop)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
+
+## Ferramentas utilizadas
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Redis](https://redis.io/)
+- [RQ:Workers](https://python-rq.org/docs/workers/)
+- [Pytest](https://docs.pytest.org/en/7.1.x/)
+- [Peewee](http://docs.peewee-orm.com/en/latest/)
+- [PyJWT](https://pyjwt.readthedocs.io/en/stable/)
+- [Supervisor](http://supervisord.org/)
+- [Httpx](https://www.python-httpx.org/)
+- [Docker](https://www.docker.com/products/docker-desktop)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [PyMySQL](https://pymysql.readthedocs.io/en/latest/user/installation.html)
+
 ## Clone do projeto
 
 ```
