@@ -23,12 +23,18 @@ class AssetMonitoring(DBModel):
     buy_order = BooleanField(null=True)
     sell_order = BooleanField(null=True)
 
+    class Meta:
+        table_name = 'AssetsMonitoring'
+
 
 class AssetMonitoringHistory(DBModel):
     id = AutoField()
     asset_id = ForeignKeyField(field='id',model=Asset)
     price = FloatField()
     time = TimeField()
+
+    class Meta:
+        table_name = 'AssetsMonitoringHistory'
 
 
 b3_tables = [
