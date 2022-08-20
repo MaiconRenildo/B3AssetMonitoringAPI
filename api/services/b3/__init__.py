@@ -34,9 +34,6 @@ def start_database():
 
 ##########################################################
 #################################################### CRON 
-def filter_price(array,code):
-    return filter(lambda x: (x['asset_code'] == code),array)
-
 @app.on_event("startup")
 def update_cotations_history():
     from api.services.b3.util import get_asset_cotation,send_purchase_recommendation_email,send_sale_recommendation_email,is_market_closed
@@ -61,30 +58,41 @@ def update_cotations_history():
     array_with_codes_and_ids_and_prices = []
     ids_and_order_types = []
     array_with_codes = []
+    prices = {}
+
 
     for i in monitored_assets:
 
+        price = 0
         new_code = i['asset_code']
         new_element_with_price = {"code": i['asset_code'], "id": i['asset_id']}
 
-        price = 0
 
         if new_code not in array_with_codes:
+
             array_with_codes.append(new_code)
+
             try:
+
                 price = get_asset_cotation(new_element_with_price['code'])
                 new_element_with_price['price'] = price
+                prices[new_code] = price
                 array_with_codes_and_ids_and_prices.append(new_element_with_price)
+
             except:
+
                 array_with_codes.remove(new_code)
+
         else:
-            new_element_with_price['price'] = filter_price(array_with_codes_and_ids_and_prices,i['asset_code'])
+
+            new_element_with_price['price'] = prices[new_code]
 
 
         # ordem de compra
         if i['lower_price_limit'] <= price and i['upper_price_limit'] > price:
             
             if i['buy_order'] == None:
+
                 email_queue().enqueue(
                     send_purchase_recommendation_email,
                     email=i['user_email'],
@@ -109,12 +117,15 @@ def update_cotations_history():
 
                 ids_and_order_types.append({"id":i['monitoring_id'],"order_type": "sell"})
     
+
     update_asset_monitoring_orders(ids_and_order_types)
+
 
     if(insert_in_asset_monitoring_history(array_with_codes_and_ids_and_prices,now())):
         print("Cotations updated successfully")
         return True
-    
+
+
     print("Cotations not updated")
     return False
 
