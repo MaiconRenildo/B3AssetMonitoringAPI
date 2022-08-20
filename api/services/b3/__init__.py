@@ -55,9 +55,9 @@ def update_cotations_history():
         return False
 
 
-    array_with_codes_and_ids_and_prices = []
+    codes_ids_and_prices = []
     ids_and_order_types = []
-    array_with_codes = []
+    codes = []
     prices = {}
 
 
@@ -68,20 +68,20 @@ def update_cotations_history():
         new_element_with_price = {"code": i['asset_code'], "id": i['asset_id']}
 
 
-        if new_code not in array_with_codes:
+        if new_code not in codes:
 
-            array_with_codes.append(new_code)
+            codes.append(new_code)
 
             try:
 
-                price = get_asset_cotation(new_element_with_price['code'])
+                price = get_asset_cotation(new_code)
                 new_element_with_price['price'] = price
                 prices[new_code] = price
-                array_with_codes_and_ids_and_prices.append(new_element_with_price)
+                codes_ids_and_prices.append(new_element_with_price)
 
             except:
 
-                array_with_codes.remove(new_code)
+                codes.remove(new_code)
 
         else:
 
@@ -121,7 +121,7 @@ def update_cotations_history():
     update_asset_monitoring_orders(ids_and_order_types)
 
 
-    if(insert_in_asset_monitoring_history(array_with_codes_and_ids_and_prices,now())):
+    if(insert_in_asset_monitoring_history(codes_ids_and_prices,now())):
         print("Cotations updated successfully")
         return True
 
