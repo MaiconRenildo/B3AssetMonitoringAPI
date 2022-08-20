@@ -20,6 +20,8 @@ API de monitoramento de ativos da B3
 - [Docker](https://www.docker.com/products/docker-desktop)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [PyMySQL](https://pymysql.readthedocs.io/en/latest/user/installation.html)
+- [SQLite](https://www.sqlite.org/docs.html)
+- [MySQL](https://www.mysql.com/)
 
 ## Clone do projeto
 
